@@ -14,15 +14,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="css/style.css">
     
     <!-- 카카오맵 API -->
     <!-- ⚠️ 중요: YOUR_KAKAO_MAP_API_KEY를 카카오 개발자 콘솔에서 발급받은 JavaScript 키로 교체하세요 -->
     <!-- 발급 방법: https://developers.kakao.com/ → 내 애플리케이션 → 앱 키 → JavaScript 키 -->
+    <!-- GitHub Pages 도메인도 카카오 개발자 콘솔의 플랫폼 설정에 추가해야 합니다 -->
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_KAKAO_MAP_API_KEY"></script>
 </head>
 <body>
-    {% raw %}
     <div id="app">
         <!-- Hero Section -->
         <section class="hero-section d-flex align-items-center justify-content-center">
@@ -184,7 +184,6 @@
             </div>
         </section>
     </div>
-    {% endraw %}
 
     <!-- Vue 3 CDN -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -193,7 +192,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
 
