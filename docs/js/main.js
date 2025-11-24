@@ -5,8 +5,8 @@ const inviteData = {
     venue: {
         name: "앞산주택택",
         address: "대구광역시 남구 대명동 526-33",
-        lat: 37.5665,
-        lng: 126.9780
+        lat: 35.8407,
+        lng: 128.5940
     },
     parents: {
         father: "이상석",
@@ -16,8 +16,8 @@ const inviteData = {
     },
     gallery: [
         // 추후 사진 URL만 채우면 됨
-        // 예: "/static/images/baby1.jpg",
-        //     "/static/images/baby2.jpg",
+        // 예: "images/baby1.jpg",
+        //     "images/baby2.jpg",
     ],
     message: "첫 생일 자리에 함께해 주세요."
 };

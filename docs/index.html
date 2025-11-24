@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>돌잔치 초대장</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - 감성적인 한글 폰트 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- 카카오맵 API -->
+    <!-- ⚠️ 중요: YOUR_KAKAO_MAP_API_KEY를 카카오 개발자 콘솔에서 발급받은 JavaScript 키로 교체하세요 -->
+    <!-- 발급 방법: https://developers.kakao.com/ → 내 애플리케이션 → 앱 키 → JavaScript 키 -->
+    <!-- GitHub Pages 도메인도 카카오 개발자 콘솔의 플랫폼 설정에 추가해야 합니다 -->
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_KAKAO_MAP_API_KEY"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Hero Section -->
+        <section class="hero-section d-flex align-items-center justify-content-center">
+            <div class="hero-content text-center">
+                <h1 class="hero-title fade-in-up">우리 {{ inviteData.babyName }}의</h1>
+                <h2 class="hero-subtitle fade-in-up">첫 생일에 초대합니다</h2>
+                <div class="d-day-box fade-in-up" v-if="countdown">
+                    <div class="d-day-text" v-if="countdown.days > 0">
+                        D-{{ countdown.days }}
+                    </div>
+                    <div class="d-day-text" v-else-if="countdown.days === 0">
+                        오늘이 돌잔치날입니다 🎉
+                    </div>
+                </div>
+                <div class="hero-date fade-in-up">
+                    {{ formatDate(inviteData.eventDate) }}
+                </div>
+            </div>
+        </section>
+
+        <!-- 초대 인사말 Section -->
+        <section class="section-padding fade-on-scroll">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        <h2 class="section-title">초대 인사말</h2>
+                        <p class="section-content">
+                            {{ inviteData.message || '첫 생일 자리에 함께해 주세요.' }}
+                        </p>
+                        <p class="section-content">
+                            {{ inviteData.parents.father }} · {{ inviteData.parents.mother }} 드림
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 아기 소개 Section -->
+        <section class="section-padding bg-light fade-on-scroll">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        <h2 class="section-title">우리 {{ inviteData.babyName }}</h2>
+                        <p class="section-content">
+                            태어난 지 벌써 1년이 되었어요.<br>
+                            많은 사랑과 축하를 받으며 건강하게 자라고 있습니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 사진 갤러리 Section -->
+        <section class="section-padding fade-on-scroll">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <h2 class="section-title text-center mb-5">사진 갤러리</h2>
+                        <div class="gallery-grid" v-if="inviteData.gallery && inviteData.gallery.length > 0">
+                            <div class="gallery-item" v-for="(image, index) in inviteData.gallery" :key="index">
+                                <img :src="image" :alt="`${inviteData.babyName} 사진 ${index + 1}`" class="gallery-image">
+                            </div>
+                        </div>
+                        <div class="gallery-placeholder" v-else>
+                            <div class="placeholder-item" v-for="n in 6" :key="n">
+                                <div class="placeholder-image">
+                                    <span class="placeholder-text">사진 {{ n }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 행사 안내 Section -->
+        <section class="section-padding bg-light fade-on-scroll">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <h2 class="section-title text-center mb-5">행사 안내</h2>
+                        <div class="info-box">
+                            <div class="info-item">
+                                <strong>일시</strong>
+                                <p>{{ formatDate(inviteData.eventDate) }}</p>
+                            </div>
+                            <div class="info-item">
+                                <strong>장소</strong>
+                                <p>{{ inviteData.venue.name }}<br>{{ inviteData.venue.address }}</p>
+                            </div>
+                            <div class="info-item">
+                                <strong>연락처</strong>
+                                <p>
+                                    아빠: <a :href="`tel:${inviteData.parents.fatherContact}`" class="contact-link">{{ inviteData.parents.fatherContact }}</a><br>
+                                    엄마: <a :href="`tel:${inviteData.parents.motherContact}`" class="contact-link">{{ inviteData.parents.motherContact }}</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 오시는 길 Section (카카오맵) -->
+        <section class="section-padding fade-on-scroll">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <h2 class="section-title text-center mb-5">오시는 길</h2>
+                        <div id="map" class="map-container"></div>
+                        <div class="text-center mt-4">
+                            <a :href="kakaoMapUrl" target="_blank" class="btn btn-primary btn-lg">
+                                카카오맵으로 열기
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 연락처/마무리 Section -->
+        <section class="section-padding bg-light fade-on-scroll">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        <h2 class="section-title">연락하기</h2>
+                        <p class="section-content mb-4">
+                            궁금한 사항이 있으시면 언제든지 연락 주세요.
+                        </p>
+                        <div class="contact-buttons">
+                            <div class="parent-contact mb-4">
+                                <h4 class="parent-name mb-3">{{ inviteData.parents.father }} (아빠)</h4>
+                                <div class="d-flex flex-wrap justify-content-center gap-2">
+                                    <a :href="`tel:${inviteData.parents.fatherContact}`" class="btn btn-primary btn-lg">
+                                        📞 전화하기
+                                    </a>
+                                    <a :href="`sms:${inviteData.parents.fatherContact}`" class="btn btn-outline-primary btn-lg">
+                                        💬 문자하기
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="parent-contact">
+                                <h4 class="parent-name mb-3">{{ inviteData.parents.mother }} (엄마)</h4>
+                                <div class="d-flex flex-wrap justify-content-center gap-2">
+                                    <a :href="`tel:${inviteData.parents.motherContact}`" class="btn btn-primary btn-lg">
+                                        📞 전화하기
+                                    </a>
+                                    <a :href="`sms:${inviteData.parents.motherContact}`" class="btn btn-outline-primary btn-lg">
+                                        💬 문자하기
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="section-content mt-5">
+                            많은 축하와 사랑 부탁드립니다 💕
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Vue 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="js/main.js"></script>
+</body>
+</html>
+
